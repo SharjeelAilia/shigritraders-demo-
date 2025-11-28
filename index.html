@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shigri Traders | FOXESS Solar Pakistan</title>
+<style>
+  /* --- THEME COLORS --- */
+  :root {
+    --primary-color: #0f9d58; 
+    --secondary-color: #34a853; 
+    --bg-color: #021721; 
+    --text-color: #e0f2e9; 
+    --nav-bg: #021721; 
+    --section-bg: #022f38; 
+    --footer-bg: #021721;
+    --footer-text: #e0f2e9;
+  }
+
+  body.dark-theme {
+    --bg-color: #021721; 
+    --text-color: #e0f2e9; 
+    --nav-bg: #021721;
+    --section-bg: #022f38;
+    --footer-bg: #021721;
+    --footer-text: #e0f2e9;
+  }
+
+  /* --- BASIC STYLES --- */
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family: Arial, sans-serif; background:var(--bg-color); color:var(--text-color); line-height:1.6; scroll-behavior: smooth; transition: all 0.5s ease; position: relative; }
+  a { text-decoration:none; cursor:pointer; color:inherit; }
+  h1,h2,h3,h4,h5,h6 { margin:0; }
+  img { max-width:100%; display:block; }
+  section { max-width:1200px; margin:60px auto; padding:40px 20px; background:var(--section-bg); border-radius:10px; opacity:0; transform:translateY(30px); transition:all 1s ease-in-out; position: relative; z-index:1; }
+  section.show { opacity:1; transform:translateY(0); }
+  body > * { position: relative; z-index:1; }
+
+  /* --- CANVAS PARTICLES --- */
+  #bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* --- NAVBAR --- */
+  nav { background:var(--nav-bg); box-shadow:0 2px 5px rgba(0,0,0,0.5); padding:20px 40px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; transition: all 0.3s ease; }
+  nav.scrolled { padding:10px 40px; box-shadow:0 4px 15px rgba(0,0,0,0.7);}
+  nav .logo { display:flex; align-items:center; gap:10px; }
+  nav .logo img { width:60px; height:auto; }
+  nav ul { list-style:none; display:flex; gap:25px; margin-left:10px; }
+  nav ul li a { font-weight:600; transition: color 0.3s; }
+  nav ul li a:hover, nav ul li a.active { color:var(--secondary-color); }
+  nav .cta { display:flex; gap:10px; align-items:center; }
+
+  /* Theme switch */
+  .theme-switch { position:relative; display:inline-block; width:40px; height:20px; }
+  .theme-switch input { opacity:0; width:0; height:0; }
+  .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#555; transition: .4s; border-radius: 20px; }
+  .slider:before { position:absolute; content:""; height:16px; width:16px; left:2px; bottom:2px; background:white; transition: .4s; border-radius:50%; }
+  input:checked + .slider { background:var(--secondary-color); }
+  input:checked + .slider:before { transform: translateX(20px); }
+
+  /* --- HERO --- */
+  .hero { 
+    height:100vh;
+    background: center/cover no-repeat;
+    color:white; 
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before {
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.4);
+    z-index:1;
+  }
+  .hero h1, .hero p, .hero a {
+    position:relative; z-index:2;
+    opacity:0; transform:translateY(-20px);
+    transition: all 1s ease-in-out;
+  }
+  .hero.show h1 { opacity:1; transform:translateY(0); transition-delay:0.2s; }
+  .hero.show p { opacity:1; transform:translateY(0); transition-delay:0.5s; }
+  .hero.show a { opacity:1; transform:translateY(0); transition-delay:0.8s; margin-top:10px; }
+  .hero a { padding:12px 25px; border-radius:5px; font-weight:bold; background:var(--secondary-color); color:white; }
+
+  /* --- ABOUT --- */
+  .about-content { display:flex; flex-wrap:wrap; align-items:center; gap:20px; }
+  .about-text { flex:1; min-width:250px; }
+  .about-img { flex:1; min-width:250px; text-align:center; }
+  .about-img img { width:100%; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.5); }
+
+  /* --- PRODUCTS --- */
+  #products { padding-bottom:60px; }
+  .products-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+  .product-card { padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.5); background:var(--bg-color); transition: transform 0.5s ease, box-shadow 0.5s ease; text-align:center; }
+  .product-card:hover { transform: translateY(-10px) scale(1.05); box-shadow:0 10px 30px rgba(0,0,0,0.7); }
+
+  /* --- SERVICES --- */
+  #services { padding-bottom:60px; }
+  .services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+  .service-card { padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.5); transition: transform 0.5s ease, box-shadow 0.5s ease, background 0.5s; background:var(--bg-color); text-align:center; }
+  .service-card:hover { transform: translateY(-10px) scale(1.05); box-shadow:0 10px 30px rgba(0,0,0,0.7); background: rgba(15,157,88,0.2); }
+
+  /* --- CTA --- */
+  .cta-section { text-align:center; padding:50px 20px; border-radius:10px; color:white; background: linear-gradient(-45deg, #34a853, #0f9d58, #021721, #022f38); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+  .cta-section a { display:inline-block; padding:12px 25px; margin-top:15px; background:#fff; color:var(--primary-color); border-radius:5px; font-weight:bold; transition: transform 0.3s ease; }
+  .cta-section a:hover { transform:scale(1.05); }
+  @keyframes gradientBG {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  /* --- FAQ --- */
+  .faq { max-width:800px; margin:0 auto; }
+  .faq-item { margin-bottom:15px; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.5); background:var(--bg-color); cursor:pointer; transition: all 0.3s ease; overflow:hidden; }
+  .faq-item h4 { margin-bottom:5px; }
+  .faq-item p { max-height:0; opacity:0; padding-top:0; transition: all 0.5s ease; }
+
+  /* --- CONTACT --- */
+  .contact-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
+  .contact-card, form { padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.5); background:var(--bg-color); }
+  input, textarea { width:100%; padding:10px; margin-top:5px; margin-bottom:10px; border:1px solid #555; border-radius:5px; background:#022f38; color:#e0f2e9; }
+  button { padding:10px 15px; border:none; border-radius:5px; cursor:pointer; }
+  button.submit { background:var(--secondary-color); color:white; font-weight:bold; }
+  button.reset { background:#022f38; border:1px solid #555; color:#e0f2e9; }
+
+  /* --- FOOTER --- */
+  footer { background:var(--footer-bg); color:var(--footer-text); text-align:center; padding:20px; font-size:14px; transition: all 0.5s ease; }
+  footer a { color:#34a853; text-decoration:underline; }
+
+  /* --- MEDIA --- */
+  @media(max-width:768px){
+    nav ul { flex-direction:column; gap:10px; display:none; }
+    nav ul.show { display:flex; }
+    .about-content { flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo"><img src="/imgs/logo-removebg-preview.png" alt="Shigri Traders"></div>
+  <ul id="nav-links">
+    <li><a href="#home" class="nav-link">Home</a></li>
+    <li><a href="#about" class="nav-link">About</a></li>
+    <li><a href="#products" class="nav-link">Products</a></li>
+    <li><a href="#services" class="nav-link">Services</a></li>
+    <li><a href="#faq" class="nav-link">FAQ</a></li>
+    <li><a href="#contact" class="nav-link">Contact</a></li>
+  </ul>
+  <div class="cta">
+    <a href="#contact" class="call">Call Us</a>
+    <a href="#contact" class="quote">Request Quote</a>
+    <label class="theme-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home" data-hero-img="/imgs/farmplusfinancialinc-353581-solar-panels-field-BlogBanner1-1.jpeg">
+  <h1>Empowering Communities with Solar Energy</h1>
+  <p>Join us in creating a sustainable future through advanced solar solutions that provide clean, reliable energy for all.</p>
+  <a href="#products" class="btn-primary">Explore Our Products</a>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <h2>About Shigri Traders</h2>
+  <div class="about-content">
+    <div class="about-text">
+      <p>At Shigri Traders, we are passionate about promoting sustainable energy solutions. As exclusive distributors of FOXESS solar products in Pakistan, we offer high-quality inverters and batteries designed to harness solar power effectively. Our commitment is to empower communities and reduce reliance on traditional power sources through innovative technology.</p>
+    </div>
+    <div class="about-img">
+      <img src="/imgs/about.jpg">
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <h2>Our Products</h2>
+  <div class="products-grid">
+    <div class="product-card"><strong>FOXESS Inverters</strong><p>High efficiency solar inverters for residential and commercial use.</p></div>
+    <div class="product-card"><strong>Solar Batteries</strong><p>Reliable energy storage solutions to maximize solar usage.</p></div>
+    <div class="product-card"><strong>Solar Panels</strong><p>Durable and high-performance solar panels for consistent energy generation.</p></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <h2>Our Services</h2>
+  <div class="services-grid">
+    <div class="service-card"><strong>Installation</strong><p>Professional solar system installation for maximum efficiency.</p></div>
+    <div class="service-card"><strong>Maintenance</strong><p>Routine maintenance and troubleshooting to keep systems running smoothly.</p></div>
+    <div class="service-card"><strong>Consultation</strong><p>Expert advice for custom solar solutions tailored to your needs.</p></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <h2>FAQs</h2>
+  <div class="faq">
+    <div class="faq-item"><h4>What are the benefits of solar energy?</h4><p>Solar energy reduces electricity bills, lowers carbon footprint, and promotes energy independence. It's a sustainable and renewable energy source.</p></div>
+    <div class="faq-item"><h4>How do FOXESS products work?</h4><p>FOXESS inverters convert solar energy into usable electricity, while their batteries store excess energy for later use.</p></div>
+    <div class="faq-item"><h4>Is solar energy suitable for my home?</h4><p>Most homes can benefit from solar energy. Factors like roof size, orientation, and location will determine efficiency. Our team can assess your property.</p></div>
+    <div class="faq-item"><h4>What maintenance do solar systems require?</h4><p>Solar systems are low maintenance but should be cleaned periodically and checked annually to ensure optimal performance.</p></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2>Get in Touch</h2>
+  <div class="contact-grid">
+    <div class="contact-card" id="contact-info">
+      <p>We are here to help you with all your solar energy inquiries. Whether you have questions about our products or need a consultation, don’t hesitate to reach out.</p>
+      <p><strong>Address:</strong> 3 Commercial Area KB Colony, New Airport Rd, Cantt, 54000 Lahore</p>
+      <p><strong>Phone:</strong> <span id="phone-number">+92 340 5173065</span></p>
+      <p><strong>Email:</strong> info@shigritraders.com</p>
+    </div>
+    <form onsubmit="event.preventDefault(); alert('Form submitted!');">
+      <label>Full Name</label>
+      <input type="text" placeholder="Your name" required>
+      <label>Email Address</label>
+      <input type="email" placeholder="you@example.com" required>
+      <label>Your Message</label>
+      <textarea rows="4" placeholder="Type your message here..." required></textarea>
+      <div style="margin-top:10px;">
+        <button type="submit" class="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>Shigri Traders is your trusted partner in solar energy solutions. We provide high-quality products, exceptional customer support, and a commitment to sustainable energy for a greener future.</div>
+  <p>© 2025 Shigri Traders • <a href="mailto:info@shigritraders.com">info@shigritraders.com</a></p>
+</footer>
+
+<script>
+  // Sections fade in
+  const sections = document.querySelectorAll('section, .hero');
+  const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('show'); }); }, { threshold: 0.2 });
+  sections.forEach(section => observer.observe(section));
+
+  // Smooth scroll + Call Us glove effect
+  document.querySelectorAll('nav ul li a, .btn-primary, .cta a').forEach(link => {
+    link.addEventListener('click', e => { 
+      e.preventDefault(); 
+      const target = document.querySelector(link.getAttribute('href')); 
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+
+      if(link.classList.contains('call')){
+        const phone = document.getElementById('phone-number');
+        phone.style.transition = 'all 0.3s ease';
+        phone.style.color = '#34a853';
+        phone.style.textShadow = '0 0 10px #34a853, 0 0 20px #34a853';
+        setTimeout(() => { phone.style.color=''; phone.style.textShadow=''; }, 5000);
+      }
+    });
+  });
+
+  // Navbar shrink
+  window.addEventListener('scroll', () => { document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50); });
+
+  // FAQ accordion with animation
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const p = item.querySelector('p');
+      if(p.style.maxHeight){
+        p.style.maxHeight = null;
+        p.style.opacity = 0;
+      } else {
+        document.querySelectorAll('.faq-item p').forEach(el => { el.style.maxHeight = null; el.style.opacity = 0; });
+        p.style.maxHeight = p.scrollHeight + 'px';
+        p.style.opacity = 1;
+      }
+    });
+  });
+
+  // Theme toggle
+  const toggle = document.getElementById('theme-toggle');
+  toggle.addEventListener('change', () => { document.body.classList.toggle('dark-theme', toggle.checked); });
+
+  // Hero image
+  const hero = document.querySelector('.hero');
+  hero.style.backgroundImage = `url(${hero.dataset.heroImg})`;
+
+  // --- PARTICLES WITH MOUSE TRAIL ---
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let width = canvas.width = window.innerWidth;
+  let height = canvas.height = window.innerHeight;
+
+  window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
+
+  const particles = [];
+  const numParticles = 120;
+
+  for(let i=0;i<numParticles;i++){
+    particles.push({ x: Math.random()*width, y: Math.random()*height, vx: (Math.random()-0.5)*0.7, vy: (Math.random()-0.5)*0.7 });
+  }
+
+  const mouse = { x:0, y:0, trail:[] };
+  canvas.addEventListener('mousemove', e => { 
+    mouse.x = e.x; 
+    mouse.y = e.y; 
+    mouse.trail.push({x:e.x,y:e.y,alpha:1});
+  });
+
+  function animate(){
+    ctx.clearRect(0,0,width,height);
+
+    // move particles
+    particles.forEach(p=>{
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0 || p.x>width) p.vx*=-1;
+      if(p.y<0 || p.y>height) p.vy*=-1;
+
+      // draw particle
+      ctx.fillStyle='white';
+      ctx.beginPath(); ctx.arc(p.x,p.y,2,0,Math.PI*2); ctx.fill();
+
+      // connect particles
+      particles.forEach(p2=>{
+        const dx = p.x - p2.x;
+        const dy = p.y - p2.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 120){
+          ctx.strokeStyle = 'rgba(52,168,83,'+(1-dist/120)+')';
+          ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+        }
+      });
+
+      // connect to mouse trail
+      if(mouse.trail.length){
+        mouse.trail.forEach(tr=>{
+          const dx = p.x - tr.x;
+          const dy = p.y - tr.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist<150){
+            ctx.strokeStyle='rgba(52,168,83,'+tr.alpha*(1-dist/150)+')';
+            ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(tr.x,tr.y); ctx.stroke();
+          }
+        });
+      }
+    });
+
+    // fade mouse trail
+    mouse.trail.forEach(tr=>tr.alpha-=0.02);
+    mouse.trail = mouse.trail.filter(tr=>tr.alpha>0);
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+</body>
+</html>
